@@ -128,6 +128,38 @@ describe('Agent loop', () => {
   `);
   });
 
+  it('persists Anthropic fallback boundaries through the machine loop and session resume', async () => {
+    profile.update({ activeToolNames: [] });
+    const fallback = {
+      type: 'anthropic_fallback' as const,
+      block: {
+        type: 'fallback' as const,
+        from: { model: 'claude-opus-5-5' },
+        to: { model: 'claude-opus-4-8' },
+        trigger: { type: 'refusal' },
+      },
+    };
+    ctx.mockNextResponse(
+      { type: 'think', think: 'before', encrypted: 'sig-before' },
+      fallback,
+      { type: 'think', think: 'after', encrypted: 'sig-after' },
+      { type: 'text', text: 'done' },
+    );
+    await ctx.rpc.prompt({ input: [{ type: 'text', text: 'Hello' }] });
+    await ctx.untilTurnEnd();
+    const assistant = ctx.contextData().history.find((entry) => entry.role === 'assistant');
+    expect(assistant?.content).toEqual([
+      { type: 'think', think: 'before', encrypted: 'sig-before', detailsIndex: undefined, hidden: undefined, reasoningKey: undefined },
+      fallback,
+      { type: 'think', think: 'after', encrypted: 'sig-after', detailsIndex: undefined, hidden: undefined, reasoningKey: undefined },
+      { type: 'text', text: 'done' },
+    ]);
+    const records = await ctx.persistedWireRecords();
+    expect(records.some((record) => record.type === 'context.append_loop_event' &&
+      (record['event'] as LoopRecordedEvent).type === 'content.part' &&
+      (record['event'] as { part?: { type: string } }).part?.type === 'anthropic_fallback')).toBe(true);
+  });
+
   it('persists a turn.ended wire record with the end reason and duration', async () => {
     profile.update({ activeToolNames: [] });
 

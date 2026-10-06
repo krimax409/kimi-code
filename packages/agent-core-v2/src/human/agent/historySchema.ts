@@ -31,6 +31,15 @@ export const contentPartSchema = z.discriminatedUnion('type', [
   imageUrlPartSchema,
   audioUrlPartSchema,
   videoUrlPartSchema,
+  z.object({
+    type: z.literal('anthropic_fallback'),
+    block: z.object({
+      type: z.literal('fallback'),
+      from: z.record(z.string(), z.unknown()),
+      to: z.record(z.string(), z.unknown()),
+      trigger: z.unknown().optional(),
+    }).passthrough(),
+  }),
 ]);
 
 const toolDescriptionSchema = z.object({

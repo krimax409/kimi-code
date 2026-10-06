@@ -11,7 +11,7 @@ function toProtocolRole(role: ContextMessage['role']): MessageRole {
   return role as MessageRole;
 }
 
-function mapContentPart(part: ContextMessage['content'][number]): MessageContent {
+function mapContentPart(part: Exclude<ContentPart, { type: 'anthropic_fallback' }>): MessageContent {
   switch (part.type) {
     case 'text':
       return { type: 'text', text: part.text };
@@ -39,7 +39,10 @@ function mapContentPart(part: ContextMessage['content'][number]): MessageContent
 }
 
 function buildProtocolContent(msg: ContextMessage): MessageContent[] {
-  const visibleContent = msg.content.filter((p) => p.type !== 'think' || p.hidden !== true);
+  const visibleContent = msg.content.filter(
+    (p): p is Exclude<ContentPart, { type: 'anthropic_fallback' }> =>
+      p.type !== 'anthropic_fallback' && (p.type !== 'think' || p.hidden !== true),
+  );
   if (msg.role === 'tool') {
     if (msg.toolCallId === undefined) {
       return visibleContent.map((p) => mapContentPart(p));

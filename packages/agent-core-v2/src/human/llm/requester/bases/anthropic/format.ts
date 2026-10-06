@@ -294,6 +294,13 @@ export function createAnthropicFormat(): ProtocolFormat<AnthropicRawStreamEvent>
         if (chunk.type === 'content_block_start' && chunk.content_block !== undefined) {
           const block = chunk.content_block;
           const index = chunk.index ?? 0;
+          if (block.type === 'fallback' && block.from !== undefined && block.to !== undefined) {
+            sink.onDelta({
+              type: 'anthropic_fallback',
+              block: { ...block, type: 'fallback', from: block.from, to: block.to },
+            });
+            return;
+          }
           if (block.type === 'tool_use') {
             sink.onDelta({
               type: 'function',

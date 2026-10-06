@@ -13,6 +13,7 @@ function convertContentPart(part: ContentPart): OpenAIContentPart | null {
     case 'text':
       return { type: 'text', text: part.text };
     case 'think':
+    case 'anthropic_fallback':
       return null;
     case 'image_url':
       return {

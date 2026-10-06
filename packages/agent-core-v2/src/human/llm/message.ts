@@ -36,7 +36,17 @@ export interface VideoURLPart {
   videoUrl: { url: string; id?: string; name?: string };
 }
 
-export type ContentPart = TextPart | ThinkPart | ImageURLPart | AudioURLPart | VideoURLPart;
+export interface AnthropicFallbackPart {
+  type: 'anthropic_fallback';
+  block: {
+    type: 'fallback';
+    from: Record<string, unknown>;
+    to: Record<string, unknown>;
+    trigger?: unknown;
+  };
+}
+
+export type ContentPart = TextPart | ThinkPart | ImageURLPart | AudioURLPart | VideoURLPart | AnthropicFallbackPart;
 
 export interface ToolCall {
   type: 'function';
@@ -84,7 +94,7 @@ export type Message = SystemMessage | UserMessage | AssistantMessage | ToolMessa
 export function isContentPart(part: StreamedMessagePart): part is ContentPart {
   const t = part.type;
   return (
-    t === 'text' || t === 'think' || t === 'image_url' || t === 'audio_url' || t === 'video_url'
+    t === 'text' || t === 'think' || t === 'image_url' || t === 'audio_url' || t === 'video_url' || t === 'anthropic_fallback'
   );
 }
 
@@ -183,6 +193,7 @@ export function isVacuousContentPart(part: ContentPart): boolean {
     case 'image_url':
     case 'audio_url':
     case 'video_url':
+    case 'anthropic_fallback':
       return false;
     default: {
       const exhaustive: never = part;
