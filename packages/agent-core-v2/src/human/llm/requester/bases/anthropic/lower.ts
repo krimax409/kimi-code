@@ -122,7 +122,9 @@ export function lowerMessage(
     });
   } else {
     for (const part of message.content) {
-      if (part.type === 'think') {
+      if (part.type === 'anthropic_fallback' && message.role === 'assistant') {
+        content.push(structuredClone(part.block));
+      } else if (part.type === 'think') {
         if (part.encrypted !== undefined) {
           content.push({ type: 'thinking', thinking: part.think, signature: part.encrypted });
         } else {

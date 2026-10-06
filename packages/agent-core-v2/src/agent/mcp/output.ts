@@ -380,7 +380,7 @@ async function applyBinaryPartCap(
   const notices: string[] = [];
 
   for (const part of parts) {
-    if (part.type === 'text' || part.type === 'think') {
+    if (part.type === 'text' || part.type === 'think' || part.type === 'anthropic_fallback') {
       out.push(part);
       continue;
     }

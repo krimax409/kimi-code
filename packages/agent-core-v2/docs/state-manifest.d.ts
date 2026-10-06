@@ -751,6 +751,14 @@ export interface AgentStateSnapshot {
         id?: string;
         name?: string;
       };
+    } | /* AnthropicFallbackPart — packages/agent-core-v2/src/human/llm/message.ts */ {
+      type: 'anthropic_fallback';
+      block: {
+        type: 'fallback';
+        from: Record<string, unknown>;
+        to: Record<string, unknown>;
+        trigger?: unknown;
+      };
     })[];
     readonly toolCalls: /* ToolCall — packages/agent-core-v2/src/human/llm/message.ts */ {
       type: 'function';
@@ -1060,6 +1068,14 @@ export interface AgentStateSnapshot {
       url: string;
       id?: string;
       name?: string;
+    };
+  } | /* AnthropicFallbackPart — packages/agent-core-v2/src/human/llm/message.ts */ {
+    type: 'anthropic_fallback';
+    block: {
+      type: 'fallback';
+      from: Record<string, unknown>;
+      to: Record<string, unknown>;
+      trigger?: unknown;
     };
   }>;
   // src/agent/media/mediaToolsRegistrar.ts

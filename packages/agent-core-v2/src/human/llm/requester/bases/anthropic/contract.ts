@@ -1,6 +1,9 @@
+import type { AnthropicFallbackPart } from '#/llm/message';
+
 export const CONTEXT_MANAGEMENT_BETA = 'context-management-2025-06-27';
 
 export type AnthropicWireContentBlock =
+  | (AnthropicFallbackPart['block'] & { cache_control?: { type: 'ephemeral' } })
   | { type: 'text'; text: string; cache_control?: { type: 'ephemeral' } }
   | {
       type: 'image';
@@ -53,6 +56,9 @@ export type AnthropicRawContentBlock = {
   id?: string;
   name?: string;
   input?: unknown;
+  from?: Record<string, unknown>;
+  to?: Record<string, unknown>;
+  trigger?: unknown;
 };
 
 export type AnthropicRawStreamEvent = {

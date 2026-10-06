@@ -71,6 +71,8 @@ export function estimateTokensForContentPart(part: ContentPart): number {
     case 'audio_url':
     case 'video_url':
       return MEDIA_TOKEN_ESTIMATE;
+    case 'anthropic_fallback':
+      return 0;
     default: {
       const exhaustive: never = part;
       void exhaustive;

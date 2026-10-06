@@ -9,6 +9,7 @@ export function isVacuousContentPart(part: ContentPart): boolean {
     case 'image_url':
     case 'audio_url':
     case 'video_url':
+    case 'anthropic_fallback':
       return false;
     default: {
       const exhaustive: never = part;
